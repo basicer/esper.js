@@ -48,3 +48,10 @@ function raw(s) { return s.raw.join('|') + Object.keys(s).join("%") }
 console.log(raw `Two\nLines ${x}\nThree\nLines`)
 console.log(String.raw `Two\nLines ${x}\nThree\nLines`)
 console.log(String.raw({ raw: 'test' }, 0, 1, 2));
+
+function dfn(x=10) {
+	console.log(x);
+}
+
+dfn()
+dfn(7)

@@ -359,6 +359,8 @@ class EsperASTInstructions {
 			} else if ( o.type == 'Identifier' ) {
 				scope[o.name] = a;
 				a.vars[o.name] = a;
+			} else if (o.type == 'AssignmentPattern') {
+				apply(o.left);
 			}
 		}
 
@@ -375,8 +377,10 @@ class EsperASTInstructions {
 				apply(o);
 			} else if ( o.type == 'VariableDeclarator' ) {
 				apply(o.id);
+			} else if (o.type == 'AssignmentPattern') {
+				apply(o);
 			} else {
-				throw `Unsupport paramater type ${o.type}`;
+				throw new TypeError(`Unsupport paramater type ${o.type}`);
 			}
 		}
 

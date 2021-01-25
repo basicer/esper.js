@@ -143,24 +143,34 @@ class ClosureValue extends ObjectValue {
 
 		for ( let i = 0; i < this.func.params.length; ++i ) {
 			let p = this.func.params[i];
+			let def = false;
+
 			if ( p.type === "AssignmentPattern" ) {
-					p = p.left;
-					//TODO: Calculate default value
+				def = p.right;
+				p = p.left;
 			}
 			if ( p.type === 'RestElement' ) {
 				let name = this.func.params[i].argument.name;
 				let rest = args.slice(i);
 				invokeScope.add(name, ArrayValue.make(rest, scope.realm));
 			} else {
-				let def = Value.undef;
 				if ( p.type === "Identifier" ) {
 					p = {id: p};
 					if (!p.id) console.log("Wrong P", Object.keys(this.func.vars), p);
 					let name = p.id ? p.id.name : undefined;
 
+					let val = Value.undef;
+
+					if (i < args.length) {
+						val = args[i];
+					} else if (def) {
+						val = yield * extra.evaluator.branch(def, scope);
+						argvars[i].value = val;
+					}
+
 					if ( scope.strict ) {
 						//Scope is strict, so we make a copy for the args variable
-						invokeScope.add(name, i < args.length ? args[i] : def);
+						invokeScope.add(name, val);
 					} else {
 						//Scope isnt strict, magic happens.
 						invokeScope.object.rawSetProperty(name, argvars[i]);
